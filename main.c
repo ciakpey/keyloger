@@ -2,14 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "liste.c"
+#include "main.h"
+#include "liste.h"
 
-#define TAILLE_BUFF 30
 
 
 /* poour la gestion du presse papier, voir la fonction gtk_clipboard_wait_for_text */
-
-int get_keymap(char keymap[][TAILLE_BUFF][3]);
 
 int main(int argc, char *argv[]){
 
@@ -19,6 +17,7 @@ int main(int argc, char *argv[]){
 	}
 
 	time_t curtime;
+	struct liste *liste_interuptions=NULL;
 
 	/* lancement commande xinput*/
 	int id = atoi(argv[1]);
@@ -53,10 +52,13 @@ int main(int argc, char *argv[]){
 	while (fgets(sortie_xinput,TAILLE_BUFF,sortie) != NULL) {
 			time(&curtime);
 		if(sscanf(sortie_xinput,"key press %d", &num)==1){
-			fprintf(enregistrement,"press %s %s\n",keymap[num][0],ctime(&curtime));
+			ajoute(liste_interuptions,num);
+			/*fprintf(enregistrement,"press %s %s\n",keymap[num][0],ctime(&curtime));*/
 		}
 		else if (sscanf(sortie_xinput,"key release %d", &num)==1){
-			fprintf(enregistrement,"release %s %s\n", keymap[num][0],ctime(&curtime));
+				fprintliste(liste_interuptions,enregistrement);
+				supprime(liste_interuptions,num);
+			/*fprintf(enregistrement,"release %s %s\n", keymap[num][0],ctime(&curtime));*/
 			}
 		fflush(enregistrement);
 	}
@@ -64,6 +66,8 @@ int main(int argc, char *argv[]){
 	pclose(sortie);
 	return 0;
 }
+
+
 
 int get_keymap(char keymap[][TAILLE_BUFF][3]){/* keymap[i]="string"*/
 	FILE *map;
@@ -84,10 +88,10 @@ int get_keymap(char keymap[][TAILLE_BUFF][3]){/* keymap[i]="string"*/
 	
 	while (fgets(attente,5*TAILLE_BUFF,map)!=NULL) {
 		if (sscanf(attente,"keycode %d = %s %s %s %s %s",&num,attent,shift_attent,shit1,shit2,altgr_attent)>=1 && num<256 && num>0){
-			memcpy(*(keymap+3*num),attent,TAILLE_BUFF);
-			}
+			memcpy(keymap[num][3],attent,TAILLE_BUFF);
 		}
+	}
 		
 	pclose(map);
 	return 0;
-}
+	}

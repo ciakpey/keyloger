@@ -1,23 +1,22 @@
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "liste.h"
 
 /* ptr->|....|...|precedent|element|suivant|....*/
-struct liste{
-	char *elem;
-	struct liste *suivant;
-	struct liste *precedent;
-};
 
-void ajoute(struct liste *maliste,char  *elem){
-	char *new=(char *) malloc(strlen(elem) *sizeof(char));
-	struct liste newliste = {new,NULL,maliste};
-	*maliste=newliste;
+extern void ajoute(struct liste *maliste,int elem){
+	
+	struct liste *newliste = (struct liste *) malloc(sizeof(struct liste));
+	newliste->elem=elem; newliste->suivant=maliste; newliste->precedent=NULL;/*={elem,NULL,maliste};*/
+	maliste=newliste;
 	maliste->precedent = maliste;
 }
 
-void supprime(struct liste *maliste,char *elem){
+extern void supprime(struct liste *maliste,int elem){
 	struct liste *ptr=maliste;
 	while(ptr!=NULL){
-		if (strcmp(elem,ptr->elem)==0){
+		if (elem==ptr->elem){
 			if (ptr->precedent==NULL && ptr->precedent==NULL){
 				maliste=NULL;
 			}
@@ -36,3 +35,32 @@ void supprime(struct liste *maliste,char *elem){
 		else 
 			ptr=ptr->suivant;
 	}
+}
+
+int taille_liste(struct liste *maliste){
+	int accu = 0 ;
+	struct liste *ptr=maliste;
+	while(ptr!=NULL){
+		accu++;
+		ptr=ptr->suivant;
+	}
+	return accu;
+}
+
+/*struct liste *new_liste(int elem){
+	struct liste *essai = (struct liste *) malloc(sizeof(struct liste));
+	essai->elem = elem;
+	return essai;
+}*/
+
+time_t curtime;
+
+void fprintliste(struct liste *maliste,FILE *fichier){
+	struct liste *ptr=maliste;
+	while(ptr!=NULL){
+		fprintf(fichier,"%d+",ptr->elem);
+		ptr=ptr->suivant;
+	}
+	time(&curtime);
+	fprintf(fichier," %s\n",ctime(&curtime));
+}
