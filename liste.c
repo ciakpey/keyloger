@@ -2,27 +2,27 @@
 #include <stdlib.h>
 #include <string.h>
 #include "liste.h"
-
+#include <time.h>
 /* ptr->|....|...|precedent|element|suivant|....*/
 
-extern void ajoute(struct liste *maliste,int elem){
+extern void ajoute(struct liste **maliste,int elem){//fonctionne
 	
 	struct liste *newliste = (struct liste *) malloc(sizeof(struct liste));
-	newliste->elem=elem; newliste->suivant=maliste; newliste->precedent=NULL;/*={elem,NULL,maliste};*/
-	maliste=newliste;
-	maliste->precedent = maliste;
+	newliste->elem=elem; newliste->suivant=*maliste; newliste->precedent=NULL;/*={elem,NULL,maliste};*/
+	*maliste=newliste;
+	(*maliste)->precedent = *maliste;
 }
 
-extern void supprime(struct liste *maliste,int elem){
-	struct liste *ptr=maliste;
+extern void supprime(struct liste **maliste,int elem){// fonctionne
+	struct liste *ptr=*maliste;
 	while(ptr!=NULL){
 		if (elem==ptr->elem){
 			if (ptr->precedent==NULL && ptr->precedent==NULL){
-				maliste=NULL;
+				(*maliste)->elem=-1;
 			}
 			else if (ptr->precedent==NULL){
 				ptr->suivant->precedent=NULL;
-				maliste=ptr->suivant;
+				*maliste=ptr->suivant;
 			}
 			else if (ptr->suivant==NULL){
 				ptr->precedent->suivant=NULL;
@@ -55,7 +55,7 @@ int taille_liste(struct liste *maliste){
 
 time_t curtime;
 
-void fprintliste(struct liste *maliste,FILE *fichier){
+void fprintliste(struct liste *maliste,FILE *fichier){ //fonctionne
 	struct liste *ptr=maliste;
 	while(ptr!=NULL){
 		fprintf(fichier,"%d+",ptr->elem);
@@ -64,3 +64,4 @@ void fprintliste(struct liste *maliste,FILE *fichier){
 	time(&curtime);
 	fprintf(fichier," %s\n",ctime(&curtime));
 }
+
