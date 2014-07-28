@@ -55,13 +55,11 @@ int main(int argc, char *argv[]){
 			/*fprintf(enregistrement,"press %s %s\n",keymap[num][0],ctime(&curtime));*/
 		}
 		else if (sscanf(sortie_xinput,"key release %d", &num)==1){
-				if (num==38) break;
-				printf("%d",taille_liste(liste_interuptions));
+				printf("%d\n",taille_liste(liste_interuptions));
 				fprintliste(liste_interuptions,enregistrement);
-				/*supprime(&liste_interuptions,num);*/
+				supprime(&liste_interuptions,num);
 			/*fprintf(enregistrement,"release %s %s\n", keymap[num][0],ctime(&curtime));*/
 			}
-			fflush(stdout);
 		fflush(enregistrement);
 	}
 	fclose(enregistrement);
