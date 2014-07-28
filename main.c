@@ -2,16 +2,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "liste.c"
+
+#define TAILLE_BUFF 30
 
 
+/* poour la gestion du presse papier, voir la fonction gtk_clipboard_wait_for_text */
 
-
-int get_keymap(char keymap[][40]);
+int get_keymap(char keymap[][TAILLE_BUFF][3]);
 
 int main(int argc, char *argv[]){
 
 	if (argc < 3 ){
-		printf("Usage : %s id_du_clavier fichier_d_enregistrement\n",argv[0]);
+		printf("Usage : %s id_du_clavier fichier_d_enregistrement -> xinput\n",argv[0]);
 		return 0;
 	}
 
@@ -33,12 +36,13 @@ int main(int argc, char *argv[]){
 	
 
 	/*buffers*/
-	char sortie_xinput[40];
+	char sortie_xinput[TAILLE_BUFF];
 	int num;
+	int nomb_touche_aligne=0;
 
 
 		/* recuperation du keymap du clavier*/
-	char keymap[256][40];
+	char keymap[256][TAILLE_BUFF][3];
 	if(get_keymap(keymap)==-1){
 		perror("Erreur dans la lecture du keymap");
 		return (-1);
@@ -46,13 +50,13 @@ int main(int argc, char *argv[]){
 
 
 	
-	while (fgets(sortie_xinput,40,sortie) != NULL) {
+	while (fgets(sortie_xinput,TAILLE_BUFF,sortie) != NULL) {
 			time(&curtime);
 		if(sscanf(sortie_xinput,"key press %d", &num)==1){
-			fprintf(enregistrement,"press %s %s\n",keymap[num],ctime(&curtime));
+			fprintf(enregistrement,"press %s %s\n",keymap[num][0],ctime(&curtime));
 		}
 		else if (sscanf(sortie_xinput,"key release %d", &num)==1){
-			fprintf(enregistrement,"release %s %s\n", keymap[num],ctime(&curtime));
+			fprintf(enregistrement,"release %s %s\n", keymap[num][0],ctime(&curtime));
 			}
 		fflush(enregistrement);
 	}
@@ -61,23 +65,29 @@ int main(int argc, char *argv[]){
 	return 0;
 }
 
-int get_keymap(char keymap[][40]){/* keymap[i]="string"*/
+int get_keymap(char keymap[][TAILLE_BUFF][3]){/* keymap[i]="string"*/
 	FILE *map;
 	map=popen("xmodmap -pke","r");
 	int num;
-	char attente[40];
-	char attent[40];
+	char attente[5*TAILLE_BUFF];
+	char attent[TAILLE_BUFF];
+	char shift_attent[TAILLE_BUFF];
+	char shit1[TAILLE_BUFF];
+	char shit2[TAILLE_BUFF];
+	char altgr_attent[TAILLE_BUFF];
+
 
 	if(map==NULL){
 		perror("Can't launch the command");
 		return (-1);
 	}
 	
-	while (fgets(attente,40,map)!=NULL) {
-		if (sscanf(attente,"keycode %d = %s",&num,attent)>=1 && num<256 && num>0){
-			memcpy(*(keymap+num),attent,40);
+	while (fgets(attente,5*TAILLE_BUFF,map)!=NULL) {
+		if (sscanf(attente,"keycode %d = %s %s %s %s %s",&num,attent,shift_attent,shit1,shit2,altgr_attent)>=1 && num<256 && num>0){
+			memcpy(*(keymap+3*num),attent,TAILLE_BUFF);
+			}
 		}
-	}
+		
 	pclose(map);
 	return 0;
 }
