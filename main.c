@@ -40,7 +40,7 @@ int main(int argc, char *argv[]){
 
 
 		/* recuperation du keymap du clavier*/
-	char keymap[256][TAILLE_BUFF][3];
+	char keymap[256][3][TAILLE_BUFF];
 	if(get_keymap(keymap)==-1){
 		perror("Erreur dans la lecture du keymap");
 		return (-1);
@@ -51,13 +51,25 @@ int main(int argc, char *argv[]){
 	while (fgets(sortie_xinput,TAILLE_BUFF,sortie) != NULL) {
 			time(&curtime);
 		if(sscanf(sortie_xinput,"key press %d", &num)==1){
-			ajoute(&liste_interuptions,num);
-			/*fprintf(enregistrement,"press %s %s\n",keymap[num][0],ctime(&curtime));*/
+			if ( est_charac(num,keymap)==0){
+				ajoute(&liste_interuptions,num);
+			}
+			else {
+				ajoute(&liste_interuptions,num);
+				fprintliste(liste_interuptions,enregistrement,keymap);
+				supprime(&liste_interuptions,num);
+			}
 		}
 		else if (sscanf(sortie_xinput,"key release %d", &num)==1){
-				printf("%d\n",taille_liste(liste_interuptions));
+			if (est_charac(num,keymap)==0){
+				supprime(&liste_interuptions,num);	
+			}
+			/*else {
 				fprintliste(liste_interuptions,enregistrement);
-				supprime(&liste_interuptions,num);
+			}
+		printf("%d\n",taille_liste(liste_interuptions));
+				fprintliste(liste_interuptions,enregistrement);
+				supprime(&liste_interuptions,num);*/
 			/*fprintf(enregistrement,"release %s %s\n", keymap[num][0],ctime(&curtime));*/
 			}
 		fflush(enregistrement);
@@ -66,10 +78,18 @@ int main(int argc, char *argv[]){
 	pclose(sortie);
 	return 0;
 }
+//0 si la touche est alt, altgr,shift, ou super et 1 sinon
+int est_charac(int carac,char keymap[][3][TAILLE_BUFF]){
+int m = (strncmp(keymap[carac][0],"Shift",5) && strncmp(keymap[carac][0],"Super",5) 	&& 
+		strncmp(keymap[carac][0],"Alt",4) && strncmp(keymap[carac][0],"ISO_Level3_Shift",16) &&
+		strncmp(keymap[carac][0],"Control",6));
+printf("%d\n",m);
+return m;
+}
 
 
 
-int get_keymap(char keymap[][TAILLE_BUFF][3]){/* keymap[i]="string"*/
+int get_keymap(char keymap[][3][TAILLE_BUFF]){/* keymap[i]="string"*/
 	FILE *map;
 	map=popen("xmodmap -pke","r");
 	int num;
@@ -88,7 +108,9 @@ int get_keymap(char keymap[][TAILLE_BUFF][3]){/* keymap[i]="string"*/
 	
 	while (fgets(attente,5*TAILLE_BUFF,map)!=NULL) {
 		if (sscanf(attente,"keycode %d = %s %s %s %s %s",&num,attent,shift_attent,shit1,shit2,altgr_attent)>=1 && num<256 && num>0){
-			memcpy(keymap[num][3],attent,TAILLE_BUFF);
+			memcpy(keymap[num][1],shift_attent,TAILLE_BUFF);
+			memcpy(keymap[num][0],attent,TAILLE_BUFF);
+			memcpy(keymap[num][2],altgr_attent,TAILLE_BUFF);
 		}
 	}
 		

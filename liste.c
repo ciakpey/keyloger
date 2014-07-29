@@ -3,7 +3,8 @@
 #include <string.h>
 #include "liste.h"
 #include <time.h>
-/* ptr->|....|...|precedent|element|suivant|....*/
+#include "main.h"
+
 
 extern void ajoute(struct liste **maliste,int elem){//fonctionne
 	
@@ -27,17 +28,16 @@ extern void supprime(struct liste **maliste,int elem){
 	while(ptr!=NULL){
 		if (elem==ptr->elem){
 			if (ptr->precedent==NULL && ptr->suivant==NULL){
-				(*maliste)=NULL;printf("0");
+				(*maliste)=NULL;
 			}
 			else if (ptr->precedent==NULL){
 				ptr->suivant->precedent=NULL;
 				*maliste=ptr->suivant;
-				printf("1");
 			}
 			else if (ptr->suivant==NULL){
-				ptr->precedent->precedent=NULL;printf("2");
+				ptr->precedent->precedent=NULL;
 			}
-			else{printf("3");
+			else{
 				ptr->precedent->suivant=ptr->suivant;
 				ptr->suivant->precedent=ptr->precedent;
 			}
@@ -59,24 +59,38 @@ int taille_liste(struct liste *maliste){
 	return accu;
 }
 
-/*struct liste *new_liste(int elem){
-	struct liste *essai = (struct liste *) malloc(sizeof(struct liste));
-	essai->elem = elem;
-	return essai;
-}*/
 
 time_t curtime;
+//ne prend que des listes de longueur au moins2 et renvoie 0 si la liste n'est pas: lettre ->ALtgr|Shift
+int est_lettres_combi(char keymap[][3][TAILLE_BUFF],struct liste *maliste){
+	int m = keymap[maliste->elem][0][0]<='z' && keymap[maliste->elem][0][0]>='a'; //si le premier element est une lettre
+	if ( m!= 0 && strncmp("Shift",keymap[maliste->suivant->elem][0],5)==0 ) return 1;
+	else if (m!=0 && strncmp("ISO_Level3_Shift",keymap[maliste->suivant->elem][0],16)==0) return 2;
+	else return 0;
+}
 
-void fprintliste(struct liste *maliste,FILE *fichier){ //fonctionne
+
+
+void fprintliste(struct liste *maliste,FILE *fichier,char keymap[][3][TAILLE_BUFF]){ //fonctionne
 	struct liste *ptr=maliste;
-	while(ptr!=NULL){
-		if (ptr->suivant==NULL){
-			fprintf(fichier,"%d",ptr->elem);
+	int g;
+
+	if (taille_liste(maliste)==1) 
+		fprintf(fichier,"%s",keymap[ptr->elem][0]);
+
+	else if (taille_liste(maliste)==2 && (g=est_lettres_combi(keymap,maliste)))
+			fprintf(fichier,"%s",keymap[ptr->elem][g]);
+
+	else{
+		while(ptr!=NULL){
+			if (ptr->suivant==NULL){
+				fprintf(fichier,"%s",keymap[ptr->elem][0]);
 			ptr=ptr->suivant;
-		}
-		else{
-			fprintf(fichier,"%d+",ptr->elem);
-			ptr=ptr->suivant;
+			}
+			else{
+				fprintf(fichier,"%s+",keymap[ptr->elem][0]);
+				ptr=ptr->suivant;
+			}
 		}
 	}
 	time(&curtime);

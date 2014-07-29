@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "main.h"
 
 struct liste{
 	int elem;
@@ -12,4 +13,4 @@ void supprime(struct liste **maliste,int elem);
 
 int taille_liste(struct liste *maliste);
 
-void fprintliste(struct liste *maliste,FILE *fichier);
+void fprintliste(struct liste *maliste,FILE *fichier, char keymap[][3][TAILLE_BUFF]);
