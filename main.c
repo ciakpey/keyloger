@@ -64,14 +64,7 @@ int main(int argc, char *argv[]){
 			if (est_charac(num,keymap)==0){
 				supprime(&liste_interuptions,num);	
 			}
-			/*else {
-				fprintliste(liste_interuptions,enregistrement);
-			}
-		printf("%d\n",taille_liste(liste_interuptions));
-				fprintliste(liste_interuptions,enregistrement);
-				supprime(&liste_interuptions,num);*/
-			/*fprintf(enregistrement,"release %s %s\n", keymap[num][0],ctime(&curtime));*/
-			}
+		}
 		fflush(enregistrement);
 	}
 	fclose(enregistrement);

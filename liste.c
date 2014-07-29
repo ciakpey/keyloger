@@ -82,14 +82,9 @@ void fprintliste(struct liste *maliste,FILE *fichier,char keymap[][3][TAILLE_BUF
 			fprintf(fichier,"%s",keymap[ptr->elem][g]);
 	else{
 		while(ptr!=NULL && ptr->suivant!=NULL){
-			/*if (ptr->suivant==NULL){
-				fprintf(fichier,"%s",keymap[ptr->elem][0]);
-			ptr=ptr->suivant;
-			}
-			else{*/
+			
 				fprintf(fichier,"%s+",keymap[ptr->suivant->elem][0]);
 				ptr=ptr->suivant;
-			//}
 		}
 		fprintf(fichier,"%s",keymap[maliste->elem][0]);
 	}
