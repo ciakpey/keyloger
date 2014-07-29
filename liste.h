@@ -6,7 +6,7 @@ struct liste{
 	struct liste *suivant;
 	struct liste *precedent;
 };
-
+/* ptr->|....|...|precedent|element|suivant|....*/
 void ajoute(struct liste **maliste,int elem);
 
 void supprime(struct liste **maliste,int elem);
