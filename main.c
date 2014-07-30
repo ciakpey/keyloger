@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include "main.h"
 #include "liste.h"
 
@@ -16,7 +15,6 @@ int main(int argc, char *argv[]){
 		return 0;
 	}
 
-	time_t curtime;
 	struct liste *liste_interuptions=NULL;
 
 	/* lancement commande xinput*/
@@ -49,7 +47,6 @@ int main(int argc, char *argv[]){
 
 	
 	while (fgets(sortie_xinput,TAILLE_BUFF,sortie) != NULL) {
-			time(&curtime);
 		if(sscanf(sortie_xinput,"key press %d", &num)==1){
 			if ( est_charac(num,keymap)==0){
 				ajoute(&liste_interuptions,num);

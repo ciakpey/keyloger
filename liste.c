@@ -61,11 +61,12 @@ int taille_liste(struct liste *maliste){
 
 
 time_t curtime;
-//ne prend que des listes de longueur au moins2 et renvoie 0 si la liste n'est pas: lettre ->ALtgr|Shift
-int est_lettres_combi(char keymap[][3][TAILLE_BUFF],struct liste *maliste){
-	//int m = keymap[maliste->elem][0][0]<='z' && keymap[maliste->elem][0][0]>='a'; //si le premier element est une lettre
-	if ( /*m!= 0 &&*/ strncmp("Shift",keymap[maliste->suivant->elem][0],5)==0 ) return 1;
-	else if (/*m!=0 && */strncmp("ISO_Level3_Shift",keymap[maliste->suivant->elem][0],16)==0) return 2;
+struct tm date;
+char buff[40];
+//ne prend que des listes de longueur au moins2 et renvoie 0 si la liste n'est pas: ** ->ALtgr|Shift et 1 si shift et 2si altgr
+ int est_lettres_combi(char keymap[][3][TAILLE_BUFF],struct liste *maliste){
+	if ( strncmp("Shift",keymap[maliste->suivant->elem][0],5)==0 ) return 1;
+	else if (strncmp("ISO_Level3_Shift",keymap[maliste->suivant->elem][0],16)==0) return 2;
 	else return 0;
 }
 
@@ -79,16 +80,18 @@ void fprintliste(struct liste *maliste,FILE *fichier,char keymap[][3][TAILLE_BUF
 		fprintelem(ptr->elem,keymap,fichier,0);
 
 	else if (taille_liste(maliste)==2 && (g=est_lettres_combi(keymap,maliste)))
-			fprintelem(ptr->elem,keymap,fichier,g); //fprintf(fichier,"%s",keymap[ptr->elem][g]);
+			fprintelem(ptr->elem,keymap,fichier,g); 
 	else{
 		while(ptr!=NULL && ptr->suivant!=NULL){
-				fprintf(fichier,"%s + ",keymap[ptr->suivant->elem][0]);
+				fprintf(fichier,"%s ++ ",keymap[ptr->suivant->elem][0]);
 				ptr=ptr->suivant;
 		}
 		fprintf(fichier,"%s",keymap[maliste->elem][0]);
 	}
 	time(&curtime);
-	fprintf(fichier," %s\n",ctime(&curtime));
+	date=*localtime(&curtime);
+	strftime(buff,40,"%x %X",&date);
+	fprintf(fichier," %s\n",buff);
 }
 
 void fprintelem(int num, char keymap[][3][TAILLE_BUFF],FILE *fichier,int type){
