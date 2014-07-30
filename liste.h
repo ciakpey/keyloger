@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include "main.h"
 
+
+//liste doublement chainée  ptr->|....|...|precedent|element|suivant|....*/
 struct liste{
 	int elem;
 	struct liste *suivant;
 	struct liste *precedent;
 };
-/* ptr->|....|...|precedent|element|suivant|....*/
+
 void ajoute(struct liste **maliste,int elem);
 
 void supprime(struct liste **maliste,int elem);

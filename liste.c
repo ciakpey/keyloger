@@ -5,7 +5,7 @@
 #include <time.h>
 #include "main.h"
 
-
+//ajoute elem a la liste
 extern void ajoute(struct liste **maliste,int elem){//fonctionne
 	
 	struct liste *newliste = (struct liste *) malloc(sizeof(struct liste));
@@ -16,30 +16,33 @@ extern void ajoute(struct liste **maliste,int elem){//fonctionne
 	if (*maliste != NULL){
 		(*maliste)->precedent=newliste;
 		*maliste=newliste;
-			if ((*maliste)->suivant==NULL) printf("aa");
-			fflush(stdout);
 	}
 	else 
 		*maliste=newliste;
 }
 
+//supprime elem de la liste
 extern void supprime(struct liste **maliste,int elem){
 	struct liste *ptr=*maliste;
 	while(ptr!=NULL){
 		if (elem==ptr->elem){
 			if (ptr->precedent==NULL && ptr->suivant==NULL){
 				(*maliste)=NULL;
+				free(ptr);
 			}
 			else if (ptr->precedent==NULL){
 				ptr->suivant->precedent=NULL;
 				*maliste=ptr->suivant;
+				free(ptr);
 			}
 			else if (ptr->suivant==NULL){
 				ptr->precedent->precedent=NULL;
+				free(ptr);
 			}
 			else{
 				ptr->precedent->suivant=ptr->suivant;
 				ptr->suivant->precedent=ptr->precedent;
+				free(ptr);
 			}
 			fflush(stdout);
 			break;
@@ -48,6 +51,7 @@ extern void supprime(struct liste **maliste,int elem){
 			ptr=ptr->suivant;
 	}
 }
+
 
 int taille_liste(struct liste *maliste){
 	int accu = 0 ;
@@ -71,7 +75,7 @@ char buff[40];
 }
 
 
-
+//affiche une liste
 void fprintliste(struct liste *maliste,FILE *fichier,char keymap[][3][TAILLE_BUFF]){ //fonctionne
 	struct liste *ptr=maliste;
 	int g;
@@ -94,6 +98,9 @@ void fprintliste(struct liste *maliste,FILE *fichier,char keymap[][3][TAILLE_BUF
 	fprintf(fichier," %s\n",buff);
 }
 
+//type dit, c'est une combinaison de touche, si type = 0 c'est premier choix
+//si type = 1 c'est Shift et si type = 2 c'est altgr
+//Attention pas sur ques les noms des characteres speciaux fonctionnent avec tous les claviers
 void fprintelem(int num, char keymap[][3][TAILLE_BUFF],FILE *fichier,int type){
 	if(strcmp(keymap[num][type],"apostrophe")==0)
 		fprintf(fichier,"\'");

@@ -45,7 +45,7 @@ int main(int argc, char *argv[]){
 	}
 
 
-	
+	//lit une ligne, et mets dans la liste si Shift ou altgr, sinon imprime le charactere
 	while (fgets(sortie_xinput,TAILLE_BUFF,sortie) != NULL) {
 		if(sscanf(sortie_xinput,"key press %d", &num)==1){
 			if ( est_charac(num,keymap)==0){
@@ -73,22 +73,21 @@ int est_charac(int carac,char keymap[][3][TAILLE_BUFF]){
 int m = (strncmp(keymap[carac][0],"Shift",5) && strncmp(keymap[carac][0],"Super",5) 	&& 
 		strncmp(keymap[carac][0],"Alt",4) && strncmp(keymap[carac][0],"ISO_Level3_Shift",16) &&
 		strncmp(keymap[carac][0],"Control",6));
-printf("%d\n",m);
 return m;
 }
 
 
-
+//recupere le keymap du clavier
 int get_keymap(char keymap[][3][TAILLE_BUFF]){/* keymap[i]="string"*/
 	FILE *map;
 	map=popen("xmodmap -pke","r");
 	int num;
-	char attente[5*TAILLE_BUFF];
-	char attent[TAILLE_BUFF];
-	char shift_attent[TAILLE_BUFF];
-	char shit1[TAILLE_BUFF];
-	char shit2[TAILLE_BUFF];
-	char altgr_attent[TAILLE_BUFF];
+	char attente[5*TAILLE_BUFF];//buff total
+	char attent[TAILLE_BUFF];//buff du charactere de base
+	char shift_attent[TAILLE_BUFF];//buff du shift
+	char shit1[TAILLE_BUFF];//inutile
+	char shit2[TAILLE_BUFF];//inutile
+	char altgr_attent[TAILLE_BUFF];//buf du altgr
 
 
 	if(map==NULL){
